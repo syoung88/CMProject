@@ -7,6 +7,10 @@ from matplotlib import cm
 from scipy.optimize import curve_fit
 from sklearn.linear_model import BayesianRidge
 
+from plotting import *
+from gradient_descent_complete import *
+from gradient_descent_complete import gaussian2D as obj
+
 def ode_model(t, p, q, a, b, c, p0, p1):
     """ODE model for aquifer pressure.
     
@@ -59,6 +63,12 @@ def load_data():
 
     # Pressure of the aquifer
     p += 0.101
+
+    # Convert to SI units
+    # t_step_p *= 31536000
+    # t_step_q *= 31536000
+    # p *= 1000000
+    # q /= 31536000
 
     return t_step_q, q, t_step_p, p
 
@@ -319,6 +329,62 @@ def plot_improve():
     plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0)
     plt.show()
 
+def grad_descent():
+    
+    # parameter vector - initial guess of minimum location
+    theta0 = np.array([0.00327, 2.496, 0.499])
+    # compute steepest descent direction
+    s0 = obj_dir(obj, theta0)
+    # plot 1: compare against lab2_instructions.pdf, Figure 1 
+    # plot_s0(obj, theta0, s0)
+    #return
+    
+    # choose step size 
+    alpha = 0.5
+    # update parameter estimate
+    theta1 = step(theta0, s0, alpha)
+    # plot 2: compare against lab2_instructions.pdf, Figure 2 
+    # plot_step(obj, theta0, s0, theta1) 
+    # return
+    
+    # Get the new Jacobian for the last parameters estimation
+    s1 = obj_dir(obj, theta1)
+    # plot 3: compare against lab2_instructions.pdf, Figure 3 
+    # plot_s1(obj, theta0, s0, theta1, s1) 
+    # return
+    
+    # Plot iterations
+    # The following script repeats the process until an optimum is reached, or until the maximum number of iterations allowed is reached
+    # Try with different gammas to see how it impacts the optimization process 
+    # Uncomment line 47 to use a line search algorithm
+    theta_all = [theta0]
+    s_all = [s0]
+    # iteration control
+    N_max = 30
+    N_it = 0
+    # begin steepest descent iterations
+        # exit when max iterations exceeded
+    while N_it < N_max:
+        # uncomment line below to implement line search
+        alpha = line_search(obj, theta_all[-1], s_all[-1])
+        # update parameter vector 
+        theta_next = step(theta0, s0, alpha)
+        theta_all.append(theta_next) 	# save parameter value for plotting
+        # compute new direction for line search (thetas[-1]
+        s_next = obj_dir(obj, theta_next)
+        s_all.append(s_next) 			# save search direction for plotting
+        # compute magnitude of steepest descent direction for exit criteria
+        N_it += 1
+        # restart next iteration with values at end of previous iteration
+        theta0 = 1.*theta_next
+        s0 = 1.*s_next
+    
+    print('Optimum a, b, c: ', round(theta_all[-1][0], 2), round(theta_all[-1][1], 2), round(theta_all[-1][2], 3))
+    print('Number of iterations needed: ', N_it)
+
+    # plot 4: compare against lab2_instructions.pdf, Figure 4 
+    plot_steps(obj, theta_all, s_all)
+    return theta_all[-1]
 
 # This function plots your model against a benchmark analytic solution.
 def plot_benchmark():
