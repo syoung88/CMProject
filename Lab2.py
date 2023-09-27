@@ -60,6 +60,10 @@ def load_data():
     t_step, p = np.genfromtxt('P_acquifer.csv', delimiter=',', skip_header=7).T
     t_step_1, q = np.genfromtxt('q_acquifer.csv', delimiter=',', skip_header=7).T
 
+    # Pressure of the aquifer
+    for i in p:
+        p[i] = p[i] + 0.101
+
     return t_step, p, t_step_1, q
 
 
@@ -121,7 +125,7 @@ def solve_ode(f, t0, t1, dt, xi, pars):
 
 
 # This function defines your ODE as a numerical function suitable for calling 'curve_fit' in scipy.
-def x_curve_fitting(t, a, b):
+def x_curve_fitting(t, a, b, c, const):
     """ Function designed to be used with scipy.optimize.curve_fit which solves the ODE using the Improved Euler Method.
         Parameters:
         -----------
@@ -137,34 +141,34 @@ def x_curve_fitting(t, a, b):
             Dependent variable solution vector.
         """
     # model parameters
-    pars = [a, b]
+    pars = [a, b, c, const]
 
     # ambient value of dependent variable
-    x0 = 22
+    p0 = 22
 
     # time vector information
     n = len(t)
     dt = t[1] - t[0]
 
     # read in time and dependent variable information
-    [t, x_exact] = [load_data()[2], load_data()[3]]
+    [t, p_exact] = [load_data()[2], load_data()[3]]
 
     # initialise x
-    x = [x_exact[0]]
+    p = [p_exact[0]]
 
     # read in q data
-    [t_q, q] = [load_data()[0], load_data()[1]]
+    [t_q, q] = [load_data()[2], load_data()[3]]
 
     # using interpolation to find the injection rate at each point in time
     q = np.interp(t, t_q, q)
 
     # using the improved euler method to solve the ODE
     for i in range(n - 1):
-        f0 = ode_model(t[i], x[i], q[i], *pars, x0)
-        f1 = ode_model(t[i] + dt, x[i] + dt * f0, q[i], *pars, x0)
-        x.append(x[i] + dt * (f0 / 2 + f1 / 2))
+        f0 = ode_model(t[i], p[i], q[i], *pars, p0)
+        f1 = ode_model(t[i] + dt, p[i] + dt * f0, q[i], *pars, p0)
+        p.append(p[i] + dt * (f0 / 2 + f1 / 2))
 
-    return x
+    return p
 
 
 # This function calls 'curve_fit' to improve your parameter guess.
@@ -180,17 +184,17 @@ def x_pars(pars_guess):
            Array consisting of a: mass injection strength parameter, b: recharge strength parameter
     """
     # read in time and dependent variable data
-    [t_exact, x_exact] = [load_data()[2], load_data()[3]]
+    [t_exact, p_exact] = [load_data()[0], load_data()[1]]
 
     # finding model constants in the formulation of the ODE using curve fitting
     # optimised parameters (pars) and covariance (pars_cov) between parameters
-    pars, pars_cov = curve_fit(x_curve_fitting, t_exact, x_exact, pars_guess)
+    pars, pars_cov = curve_fit(x_curve_fitting, t_exact, p_exact, pars_guess)
  
     return pars, pars_cov
 
 
 # This function solves your ODE using Improved Euler for a future prediction with new q
-def solve_ode_prediction(f, t0, t1, dt, xi, q, a, b, x0):
+def solve_ode_prediction(f, t0, t1, dt, pi, q, a, b, c, x0, const):
     """ Solve the pressure prediction ODE model using the Improved Euler Method.
     Parameters:
     -----------
@@ -204,6 +208,8 @@ def solve_ode_prediction(f, t0, t1, dt, xi, q, a, b, x0):
         Time step length.
     xi : float
         Initial value of solution.
+    q : array
+        Values of extraction over time.
     a : float
         mass injection strength parameter.
     b : float
@@ -229,17 +235,17 @@ def solve_ode_prediction(f, t0, t1, dt, xi, q, a, b, x0):
     n = int(tspan // dt)
 
     # initialising the time and solution vectors
-    x = [xi]
+    p = [pi]
     t = [t0]
 
     # using the improved euler method to solve the pressure ODE
     for i in range(n):
-        f0 = f(t[i], x[i], q, a, b, x0)
-        f1 = f(t[i] + dt, x[i] + dt * f0, q, a, b, x0)
-        x.append(x[i] + dt * (f0 / 2 + f1 / 2))
+        f0 = f(t[i], p[i], q, a, b, c, x0, const)
+        f1 = f(t[i] + dt, p[i] + dt * f0, q, a, b, x0)
+        p.append(p[i] + dt * (f0 / 2 + f1 / 2))
         t.append(t[i] + dt)
 
-    return t, x
+    return t, p
 
 
 # This function plots your model over the data using your estimate for a and b
@@ -247,23 +253,23 @@ def plot_suitable():
     fig, (ax1, ax2) = plt.subplots(2, 1)
 
     # read in time and temperature data
-    [t, x_exact] = [load_data()[2], load_data()[3]]
+    [t, p_exact] = [load_data()[0], load_data()[1]]
 
     # TYPE IN YOUR PARAMETER ESTIMATE FOR a AND b HERE
-    pars = [1/(4.186*997*0.5), 0.0005]
+    pars = [1/(4.186*997*0.5), 0.0005, c?, const?]
   
     # solve ODE with estimated parameters and plot 
-    x = x_curve_fitting(t, *pars)
-    ax1.plot(t, x_exact, 'k.', label='Observation')
-    ax1.plot(t, x, 'r-', label='Curve Fitting Model')
-    ax1.set_ylabel('Temp (C)')
+    p = x_curve_fitting(t, *pars)
+    ax1.plot(t, p_exact, 'k.', label='Observation')
+    ax1.plot(t, p, 'r-', label='Curve Fitting Model')
+    ax1.set_ylabel('Pressure (MPa)')
     ax1.set_xlabel('Time (sec)')
     ax1.legend()
 
     # compute the model misfit and plot
-    misfit = x
-    for i in range(len(x)):
-        misfit[i] = x_exact[i] - x[i]
+    misfit = p
+    for i in range(len(p)):
+        misfit[i] = p_exact[i] - p[i]
     ax2.plot(t, misfit, 'x', label='misfit', color='r')
     ax2.set_ylabel('Temp misfit (C)')
     ax2.set_xlabel('Time (sec)')
@@ -279,10 +285,10 @@ def plot_improve():
     fig, (ax1, ax2) = plt.subplots(2, 1)
 
     # read in time and temperature data
-    [t, x_exact] = [load_data()[2], load_data()[3]]
+    [t, x_exact] = [load_data()[0], load_data()[1]]
 
     # TYPE IN YOUR PARAMETER GUESS FOR a AND b HERE AS A START FOR OPTIMISATION
-    pars_guess = [1/(4.186*997*0.5), 0.0005]
+    pars_guess = [1/(4.186*997*0.5), 0.0005, c?, const?]
     
     # call to find out optimal parameters using guess as start
     pars, pars_cov = x_pars(pars_guess)
@@ -334,16 +340,18 @@ def plot_benchmark():
     # model values for benchmark analytic solution
     a = 1
     b = 1
-    q = -1
+    c = 1
 
     # set ambient value to zero for benchmark analytic solution
     p0 = 0
     # set initial value to zero for benchmark analytic solution
     pi = 0
 
-    # setup parameters array with constants
-    pars = [a, b, x0]
+    # set the constant of integration
+    const = 0
 
+    # setup parameters array with constants
+    pars = [a, b, p0, const]
     fig, plot = plt.subplots(nrows=1, ncols=3, figsize=(13, 5))
 
     # Solve ODE and plot
@@ -357,7 +365,7 @@ def plot_benchmark():
     t = np.array(t)
 
 #   TYPE IN YOUR ANALYTIC SOLUTION HERE (removed negative bc solution is absolute value)
-    p_analytical = (b*p0 + c*p1 - aq - C1*np.exp(-t))/(b + c)
+    p_analytical = (b*p0 + c*pi - a*q - const*np.exp(-t))/(b + c)
 
     plot[0].plot(t, p_analytical, "r-", label="Analytical Solution")
     plot[0].legend(loc=1)
@@ -365,7 +373,7 @@ def plot_benchmark():
     # Plot error
     x_error = []
     for i in range(1, len(x)):
-        if (x[i] - x_analytical[i]) == 0:
+        if (p[i] - p_analytical[i]) == 0:
             x_error.append(0)
             print("check line Error Analysis Plot section")
         else:
