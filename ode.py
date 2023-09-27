@@ -60,7 +60,7 @@ def load_data():
     # Pressure of the aquifer
     p += 0.101
 
-    return t_step_p, p, t_step_q, q
+    return t_step_q, q, t_step_p, p
 
 # This function solves your ODE using Improved Euler
 def solve_ode(f, t0, t1, dt, xi, pars):
@@ -258,7 +258,7 @@ def plot_suitable():
     [t, p_exact] = [load_data()[2], load_data()[3]]
 
     # TYPE IN YOUR PARAMETER ESTIMATE FOR a, b and c HERE
-    pars = [1, 1, 1]
+    pars = [0.00327, 2.496, 0.499]
   
     # solve ODE with estimated parameters and plot 
     p = x_curve_fitting(t, *pars)
@@ -290,7 +290,7 @@ def plot_improve():
     [t, p_exact] = [load_data()[2], load_data()[3]]
 
     # TYPE IN YOUR PARAMETER GUESS FOR a, b and c HERE AS A START FOR OPTIMISATION
-    pars_guess = [1, 1, 1]
+    pars_guess = [0.00327, 2.496, 0.499]
     
     # call to find out optimal parameters using guess as start
     pars, pars_cov = x_pars(pars_guess)
@@ -302,8 +302,8 @@ def plot_improve():
     p = x_curve_fitting(t, *pars)
     ax1.plot(t, p_exact, 'k.', label='Observation')
     ax1.plot(t, p, 'r-', label='Curve Fitting Model')
-    ax1.set_ylabel('Temp (C)')
-    ax1.set_xlabel('Time (sec)')
+    ax1.set_ylabel('Pressure (MPa)')
+    ax1.set_xlabel('Time (years)')
     ax1.legend()
 
     # compute the model misfit and plot
@@ -360,7 +360,7 @@ def plot_benchmark():
     # Solve ODE and plot
     t, p = solve_ode(ode_model, t0, t1, dt, pi, pars)
     plot[0].plot(t, p, "bx", label="Numerical Solution")
-    plot[0].set_ylabel("Temperature [C]")
+    plot[0].set_ylabel("Pressure [MPa]")
     plot[0].set_xlabel("t")
     plot[0].set_title("Benchmark")
 
