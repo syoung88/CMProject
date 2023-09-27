@@ -1,4 +1,4 @@
-from Lab2 import *
+from ode import *
 
 if __name__ == "__main__":
     # benchmarking for ODE

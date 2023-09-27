@@ -61,8 +61,8 @@ def load_data():
     t_step_1, q = np.genfromtxt('q_acquifer.csv', delimiter=',', skip_header=7).T
 
     # Pressure of the aquifer
-    for i in p:
-        p[i] = p[i] + 0.101
+    for pi in p:
+        pi += 0.101
 
     return t_step, p, t_step_1, q
 
@@ -151,9 +151,9 @@ def x_curve_fitting(t, a, b, c, const):
     dt = t[1] - t[0]
 
     # read in time and dependent variable information
-    [t, p_exact] = [load_data()[2], load_data()[3]]
+    [t, p_exact] = [load_data()[0], load_data()[1]]
 
-    # initialise x
+    # initialise p
     p = [p_exact[0]]
 
     # read in q data
@@ -256,7 +256,7 @@ def plot_suitable():
     [t, p_exact] = [load_data()[0], load_data()[1]]
 
     # TYPE IN YOUR PARAMETER ESTIMATE FOR a AND b HERE
-    pars = [1/(4.186*997*0.5), 0.0005, c?, const?]
+    pars = [1/(4.186*997*0.5), 0.0005, 0.0005, 0]
   
     # solve ODE with estimated parameters and plot 
     p = x_curve_fitting(t, *pars)
@@ -288,7 +288,7 @@ def plot_improve():
     [t, x_exact] = [load_data()[0], load_data()[1]]
 
     # TYPE IN YOUR PARAMETER GUESS FOR a AND b HERE AS A START FOR OPTIMISATION
-    pars_guess = [1/(4.186*997*0.5), 0.0005, c?, const?]
+    pars_guess = [1/(4.186*997*0.5), 0.0005, 0.0005, 0]
     
     # call to find out optimal parameters using guess as start
     pars, pars_cov = x_pars(pars_guess)
@@ -344,14 +344,21 @@ def plot_benchmark():
 
     # set ambient value to zero for benchmark analytic solution
     p0 = 0
+    p1 = 0
     # set initial value to zero for benchmark analytic solution
     pi = 0
 
     # set the constant of integration
-    const = 0
+    const = 1
+
+    # read in q data
+    [t_q, q] = [load_data()[2], load_data()[3]]
+
+    # using interpolation to find the injection rate at each point in time
+    q = np.interp(t, t_q, q)
 
     # setup parameters array with constants
-    pars = [a, b, p0, const]
+    pars = [a, b, c, p0, p1, const]
     fig, plot = plt.subplots(nrows=1, ncols=3, figsize=(13, 5))
 
     # Solve ODE and plot
@@ -365,20 +372,20 @@ def plot_benchmark():
     t = np.array(t)
 
 #   TYPE IN YOUR ANALYTIC SOLUTION HERE (removed negative bc solution is absolute value)
-    p_analytical = (b*p0 + c*pi - a*q - const*np.exp(-t))/(b + c)
+    p_analytical = (b*p0 + c*p1 - a*q - const*np.exp(-t))/(b + c)
 
     plot[0].plot(t, p_analytical, "r-", label="Analytical Solution")
     plot[0].legend(loc=1)
 
     # Plot error
-    x_error = []
-    for i in range(1, len(x)):
+    p_error = []
+    for i in range(1, len(p)):
         if (p[i] - p_analytical[i]) == 0:
-            x_error.append(0)
+            p_error.append(0)
             print("check line Error Analysis Plot section")
         else:
-            x_error.append((np.abs(x[i] - x_analytical[i]) / np.abs(x_analytical[i])))
-    plot[1].plot(t[1:], x_error, "k*")
+            p_error.append((np.abs(p[i] - p_analytical[i]) / np.abs(p_analytical[i])))
+    plot[1].plot(t[1:], p_error, "k*")
     plot[1].set_ylabel("Relative Error Against Benchmark")
     plot[1].set_xlabel("t")
     plot[1].set_title("Error Analysis")
@@ -387,8 +394,8 @@ def plot_benchmark():
     # Timestep convergence plot
     time_step = np.flip(np.linspace(1/5, 1, 13))
     for i in time_step:
-        t, x = solve_ode(ode_model, t0, t1, i, x0, pars)
-        plot[2].plot(1 / i, x[-1], "kx")
+        t, x = solve_ode(ode_model, t0, t1, i, p0, pars)
+        plot[2].plot(1 / i, p[-1], "kx")
 
     plot[2].set_ylabel(f"Temp(t = {10})")
     plot[2].set_xlabel("1/\u0394t")
