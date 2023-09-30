@@ -2,12 +2,15 @@ from ode import *
 
 if __name__ == "__main__":
     # benchmarking for ODE
-    plot_benchmark()
+    #plot_benchmark()
 
-    # grad_descent()
+    grad_descent()
 
     # ODE model with initial parameter values
     # plot_suitable()
 
     # ODE model with improved parameter values from curve_fit
-    plot_improve()
+    #plot_improve()
+
+
+
