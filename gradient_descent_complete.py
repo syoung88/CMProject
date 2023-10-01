@@ -12,6 +12,7 @@
 
 # import modules
 import numpy as np
+from ode import *
 
 #					 ----------
 def obj_dir(obj, theta, model=None):
@@ -144,5 +145,15 @@ def gaussian3D(theta, model=None):
     sigma_y = .8
     # evaluate function
     return 1-np.exp(-(x-x0)**2/sigma_x**2-(y-y0)**2/sigma_y**2)
-    
+
+# New gradient descent object function
+def misfit(theta, data):
+    [a, b, c] = theta
+    misfit = 0.0
+    x_values = load_data()[3]
+    y_values = load_data()[4]
+
+    for i in range(len(data)):
+
+
     
