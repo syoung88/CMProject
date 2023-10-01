@@ -61,6 +61,18 @@ def load_data():
     t_step_p, p = np.genfromtxt('P_acquifer.csv', delimiter=',', skip_header=1).T
     t_step_q, q = np.genfromtxt('q_acquifer.csv', delimiter=',', skip_header=1).T
 
+    # calibration step of 70%
+    lengthp = len(p)
+    calbp = round(0.7 * lengthp - 1)
+    t_step_p = t_step_p[0:calbp]
+    p = p[0:calbp]
+
+    # calibration step of 70% from 1990
+    lengthq = len(q) - 30
+    calbq = round(0.7 * lengthq - 1)
+    t_step_q = t_step_q[30:calbq + 30]
+    q = q[30:calbq + 30]
+
     # Pressure of the aquifer
     p += 0.101
 
