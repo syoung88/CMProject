@@ -330,6 +330,7 @@ def plot_improve():
     plt.show()
 
 
+# GRADIENT DESCENT
 def grad_descent():
     # parameter vector - initial guess of minimum location
     theta0 = np.array([0.00327, 2.496, 0.499])
@@ -344,14 +345,14 @@ def grad_descent():
     # update parameter estimate
     theta1 = step(theta0, s0, alpha)
     # plot 2: compare against lab2_instructions.pdf, Figure 2 
-    plot_step(obj, theta0, s0, theta1)
-    return
+    #plot_step(obj, theta0, s0, theta1)
+    #return
     
     # Get the new Jacobian for the last parameters estimation
     s1 = obj_dir(obj, theta1)
     # plot 3: compare against lab2_instructions.pdf, Figure 3 
-    plot_s1(obj, theta0, s0, theta1, s1)
-    return
+    #plot_s1(obj, theta0, s0, theta1, s1)
+    #return
     
     # Plot iterations
     # The following script repeats the process until an optimum is reached, or until the maximum number of iterations allowed is reached
@@ -383,8 +384,8 @@ def grad_descent():
     print('Number of iterations needed: ', N_it)
 
     # plot 4: compare against lab2_instructions.pdf, Figure 4 
-    plot_steps(obj, theta_all, s_all)
-    return theta_all[-1]
+    #plot_steps(obj, theta_all, s_all)
+    #return theta_all[-1]
 
 
 # This function plots your model against a benchmark analytic solution.

@@ -42,7 +42,7 @@ def obj_dir(obj, theta, model=None):
         eps_i = np.zeros(len(theta))
         eps_i[i] = 1.
         # compute objective function at incremented parameter
-        si = obj(theta + dtheta*eps_i) 	
+        si = obj(theta + dtheta*eps_i, model)
         # compute objective function sensitivity
         s[i] = (si-s0)/dtheta
 
@@ -117,7 +117,7 @@ def line_search(obj, theta, s):
     return alpha
     
 
-def gaussian2D(theta, model=None):
+def gaussian3D(theta, model=None):
     """ Evaluate a 2D Gaussian function at theta.
 
         Parameters
@@ -133,15 +133,18 @@ def gaussian2D(theta, model=None):
             Value of 2D Gaussian at theta.
     """
     # unpack coordinate from theta
-    [x, y] = theta
+    [x, y, z] = theta
     # function parameters (fixed)
         # centre
+    # Gave z0 and sigma_z arbitrary values cuz idk how to estimate them
     x0 = -.2 		
     y0 = .35
+    z0 = 1.0
         # widths
     sigma_x = 1.2
     sigma_y = .8
+    sigma_z = 0.5
     # evaluate function
-    return  1-np.exp(-(x-x0)**2/sigma_x**2-(y-y0)**2/sigma_y**2)
+    return  1-np.exp(-(x-x0)**2/sigma_x**2-(y-y0)**2/sigma_y**2-(z-z0)**2/sigma_z^2)
     
     
