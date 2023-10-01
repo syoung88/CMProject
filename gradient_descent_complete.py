@@ -118,33 +118,31 @@ def line_search(obj, theta, s):
     
 
 def gaussian3D(theta, model=None):
-    """ Evaluate a 2D Gaussian function at theta.
+    """ Evaluate a 3D Gaussian function at theta.
 
         Parameters
         ----------
         theta : array-like 
-            [x, y] coordinate pair.
+            [x, y, z] coordinate pair.
         model : callable
             This input always ignored, but required for consistency with obj_dir.
         
         Returns
         -------
-        z : float
+        value : float
             Value of 2D Gaussian at theta.
     """
     # unpack coordinate from theta
-    [x, y, z] = theta
+    [x, y] = theta
     # function parameters (fixed)
         # centre
     # Gave z0 and sigma_z arbitrary values cuz idk how to estimate them
     x0 = -.2 		
     y0 = .35
-    z0 = 1.0
         # widths
     sigma_x = 1.2
     sigma_y = .8
-    sigma_z = 0.5
     # evaluate function
-    return  1-np.exp(-(x-x0)**2/sigma_x**2-(y-y0)**2/sigma_y**2-(z-z0)**2/sigma_z^2)
+    return 1-np.exp(-(x-x0)**2/sigma_x**2-(y-y0)**2/sigma_y**2)
     
     

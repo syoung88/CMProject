@@ -9,7 +9,7 @@ from sklearn.linear_model import BayesianRidge
 
 from plotting import *
 from gradient_descent_complete import *
-from gradient_descent_complete import gaussian2D as obj
+from gradient_descent_complete import gaussian3D as obj
 
 def ode_model(t, p, q, a, b, c, p0, p1):
     """ODE model for aquifer pressure.
