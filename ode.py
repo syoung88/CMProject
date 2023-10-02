@@ -76,6 +76,9 @@ def load_data():
     # Pressure of the aquifer
     p += 0.101
 
+    # Convert to Pa?
+    # p *= 1000000
+
     # Convert to SI units
     # t_step_p *= 31536000
     # t_step_q *= 31536000
@@ -280,7 +283,7 @@ def plot_suitable():
     [t, p_exact] = [load_data()[2], load_data()[3]]
 
     # TYPE IN YOUR PARAMETER ESTIMATE FOR a, b and c HERE
-    pars = [0.00327, 2.496, 0.499]
+    pars = [-1.24973239 * (10 ** -15),  2.75432755, -1.75416502]
   
     # solve ODE with estimated parameters and plot 
     p = x_curve_fitting(t, *pars)
@@ -312,7 +315,7 @@ def plot_improve():
     [t, p_exact] = [load_data()[2], load_data()[3]]
 
     # TYPE IN YOUR PARAMETER GUESS FOR a, b and c HERE AS A START FOR OPTIMISATION
-    pars_guess = [0.00327, 2.496, 0.499]
+    pars_guess = [0.00000000001037, 0.147, 0.0147]
     
     # call to find out optimal parameters using guess as start
     pars, pars_cov = x_pars(pars_guess)
