@@ -216,8 +216,12 @@ def x_pars(pars_guess):
 
     # finding model constants in the formulation of the ODE using curve fitting
     # optimised parameters (pars) and covariance (pars_cov) between parameters
-    pars,pars_cov = curve_fit(x_curve_fitting, t_exact, x_exact, pars_guess, bounds=([0, -np.inf, -np.inf], [np.inf, np.inf, np.inf]))
- 
+    try:
+        pars, pars_cov = curve_fit(x_curve_fitting, t_exact, x_exact, pars_guess, bounds=([-np.inf, -np.inf, -np.inf], [np.inf, np.inf, np.inf]))
+    except:
+        pars = [0, 0, 0]
+        pars_cov = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+
     return pars, pars_cov
 
 
@@ -311,14 +315,17 @@ def plot_suitable():
 
 
 # This function plots your model over the data using your improved model after curve fitting.
-def plot_improve():
+def plot_improve(a, b, c):
     fig, (ax1, ax2) = plt.subplots(2, 1)
 
     # read in time and pressure data
     [t, p_exact] = [load_data()[2], load_data()[3]]
 
     # TYPE IN YOUR PARAMETER GUESS FOR a, b and c HERE AS A START FOR OPTIMISATION
-    pars_guess = [0.00327, 0.147, 0.0147]
+    pars_guess = [a, b, c]
+    # a = 0.00327
+    # b = 0.147
+    # c = 0.0147
     
     # call to find out optimal parameters using guess as start
     pars, pars_cov = x_pars(pars_guess)
@@ -328,6 +335,7 @@ def plot_improve():
 
     # solve ODE with new parameters and plot 
     p = x_curve_fitting(t, *pars)
+
     ax1.plot(t, p_exact, 'k.', label='Observation')
     ax1.plot(t, p, 'r-', label='Curve Fitting Model')
     ax1.set_ylabel('Pressure (MPa)')
@@ -336,8 +344,12 @@ def plot_improve():
 
     # compute the model misfit and plot
     misfit = p
+    total_misfit = 0
     for i in range(len(p)):
         misfit[i] = p_exact[i] - p[i]
+        total_misfit += misfit[i] ** 2
+    print("Total misfit: ", total_misfit)
+
     ax2.plot(t, misfit, 'x', label='misfit', color='r')
     ax2.set_ylabel('Pressure misfit (MPa)')
     ax2.set_xlabel('Time (years)')
@@ -346,6 +358,8 @@ def plot_improve():
 
     plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0)
     plt.show()
+
+    return total_misfit
 
 
 # GRADIENT DESCENT
