@@ -40,7 +40,7 @@ def ode_model(t, p, q, a, b, c, p0, p1):
         Derivative of aquifer pressure with respect to time.
     """
 
-    dpdt = a*q - b*(p - p0) - c*(p - p1)
+    dpdt = -a*q - b*(p - p0) - c*(p - p1)
     return dpdt
 
 def load_data():
