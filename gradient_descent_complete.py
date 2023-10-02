@@ -11,7 +11,6 @@
 # There is NOTHING to submit for this lab.
 
 # import modules
-import numpy as np
 from ode import *
 
 #					 ----------

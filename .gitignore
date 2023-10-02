@@ -4,3 +4,5 @@ __pycache__/ode.cpython-37.pyc
 __pycache__/gradient_descent_complete.cpython-37.pyc
 .gitignore
 __pycache__/plotting.cpython-37.pyc
+__pycache__/gradient_descent_complete.cpython-310.pyc
+__pycache__/plotting.cpython-310.pyc

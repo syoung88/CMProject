@@ -2,6 +2,7 @@ import warnings
 import numpy as np
 import math
 import sklearn
+import matplotlib
 from matplotlib import pyplot as plt
 from matplotlib import cm
 from scipy.optimize import curve_fit
@@ -61,20 +62,23 @@ def load_data():
     t_step_p, p = np.genfromtxt('P_acquifer.csv', delimiter=',', skip_header=1).T
     t_step_q, q = np.genfromtxt('q_acquifer.csv', delimiter=',', skip_header=1).T
 
-    # calibration step of 70%
-    lengthp = len(p)
-    calbp = round(0.7 * lengthp - 1)
-    t_step_p = t_step_p[0:calbp]
-    p = p[0:calbp]
+    # # calibration step of 70%
+    # lengthp = len(p)
+    # calbp = round(0.7 * lengthp - 1)
+    # t_step_p = t_step_p[0:calbp]
+    # p = p[0:calbp]
 
-    # calibration step of 70% from 1990
-    lengthq = len(q) - 30
-    calbq = round(0.7 * lengthq - 1)
-    t_step_q = t_step_q[30:calbq + 30]
-    q = q[30:calbq + 30]
+    # # calibration step of 70% from 1990
+    # lengthq = len(q) - 30
+    # calbq = round(0.7 * lengthq - 1)
+    # t_step_q = t_step_q[30:calbq + 30]
+    # q = q[30:calbq + 30]
 
     # Pressure of the aquifer
     p += 0.101
+
+    # Convert q to kg/s
+    q /= 31536000
 
     # Convert to Pa?
     # p *= 1000000
@@ -83,7 +87,6 @@ def load_data():
     # t_step_p *= 31536000
     # t_step_q *= 31536000
     # p *= 1000000
-    # q /= 31536000
 
     return t_step_q, q, t_step_p, p
 
@@ -167,7 +170,7 @@ def x_curve_fitting(t, a, b, c):
     pars = [a, b, c]
 
     # ambient value of dependent variable
-    x0 = 0.5        # Assuming freshwater spring is 0.5 MPa for now - change when we found a proper value
+    x0 = 0.304
     x1 = 0.101
 
     # time vector information
@@ -213,7 +216,7 @@ def x_pars(pars_guess):
 
     # finding model constants in the formulation of the ODE using curve fitting
     # optimised parameters (pars) and covariance (pars_cov) between parameters
-    pars,pars_cov = curve_fit(x_curve_fitting, t_exact, x_exact, pars_guess)
+    pars,pars_cov = curve_fit(x_curve_fitting, t_exact, x_exact, pars_guess, bounds=([0, -np.inf, -np.inf], [np.inf, np.inf, np.inf]))
  
     return pars, pars_cov
 
@@ -283,7 +286,7 @@ def plot_suitable():
     [t, p_exact] = [load_data()[2], load_data()[3]]
 
     # TYPE IN YOUR PARAMETER ESTIMATE FOR a, b and c HERE
-    pars = [-1.24973239 * (10 ** -15),  2.75432755, -1.75416502]
+    pars = [0.00142612, 1.06950873, 0.93049225]
   
     # solve ODE with estimated parameters and plot 
     p = x_curve_fitting(t, *pars)
@@ -315,7 +318,7 @@ def plot_improve():
     [t, p_exact] = [load_data()[2], load_data()[3]]
 
     # TYPE IN YOUR PARAMETER GUESS FOR a, b and c HERE AS A START FOR OPTIMISATION
-    pars_guess = [0.00000000001037, 0.147, 0.0147]
+    pars_guess = [0.00327, 0.147, 0.0147]
     
     # call to find out optimal parameters using guess as start
     pars, pars_cov = x_pars(pars_guess)
