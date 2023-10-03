@@ -469,7 +469,7 @@ def plot_benchmark():
 
 #   TYPE IN YOUR ANALYTIC SOLUTION HERE
 #   if P = 0 at t = 0:
-    p_analytical = ((b * p0 + c * p1 - a * q0) / (b + c)) * (1 - np.exp(-(b + c) * t))
+    p_analytical = -((b * p0 + c * p1 - a * q0) / (b + c)) * (1 - np.exp(-(b + c) * t))
 
     plot[0].plot(t, p_analytical, "r-", label="Analytical Solution")
     plot[0].legend(loc=1)
