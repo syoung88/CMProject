@@ -7,10 +7,10 @@ if __name__ == "__main__":
     #grad_descent()
 
     # ODE model with initial parameter values
-    plot_suitable()
+    # plot_suitable()
 
     # ODE model with improved parameter values from curve_fit
-    # plot_improve(0.00327, 0.147, 0.0147)
+    plot_improve(0.00327, 0.0133, 0.00133)
 
     # Try and find best b and c values
     # min_misfit = np.inf
