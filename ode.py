@@ -67,7 +67,7 @@ def load_data():
     # calbp = round(0.7 * lengthp - 1)
     # t_step_p = t_step_p[0:calbp]
     # p = p[0:calbp]
-
+    #
     # # calibration step of 70% from 1990
     # lengthq = len(q) - 30
     # calbq = round(0.7 * lengthq - 1)
@@ -290,7 +290,7 @@ def plot_suitable():
     [t, p_exact] = [load_data()[2], load_data()[3]]
 
     # TYPE IN YOUR PARAMETER ESTIMATE FOR a, b and c HERE
-    pars = [0.00142612, 1.06950873, 0.93049225]
+    pars = [3.94300038 * (10 ** -8), 5.41582481, -4.41556915]
   
     # solve ODE with estimated parameters and plot 
     p = x_curve_fitting(t, *pars)
