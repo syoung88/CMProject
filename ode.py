@@ -67,7 +67,7 @@ def load_data():
     # calbp = round(0.7 * lengthp - 1)
     # t_step_p = t_step_p[0:calbp]
     # p = p[0:calbp]
-    #
+
     # # calibration step of 70% from 1990
     # lengthq = len(q) - 30
     # calbq = round(0.7 * lengthq - 1)
@@ -239,6 +239,8 @@ def solve_ode_prediction(f, t0, t1, dt, pi, q, a, b, c, p0, p1):
         Time step length.
     pi : float
         Initial value of solution.
+    q : float
+        Extraction rate
     a : float
         mass injection strength parameter.
     b : float
@@ -274,8 +276,8 @@ def solve_ode_prediction(f, t0, t1, dt, pi, q, a, b, c, p0, p1):
 
     # using the improved euler method to solve the pressure ODE
     for i in range(n):
-        f0 = f(t[i], p[i], q, a, b, p0, p1)
-        f1 = f(t[i] + dt, p[i] + dt * f0, q, a, b, p0, p1)
+        f0 = f(t[i], p[i], q, a, b, c, p0, p1)
+        f1 = f(t[i] + dt, p[i] + dt * f0, q, a, b, c, p0, p1)
         p.append(p[i] + dt * (f0 / 2 + f1 / 2))
         t.append(t[i] + dt)
 
@@ -290,7 +292,7 @@ def plot_suitable():
     [t, p_exact] = [load_data()[2], load_data()[3]]
 
     # TYPE IN YOUR PARAMETER ESTIMATE FOR a, b and c HERE
-    pars = [3.94300038 * (10 ** -7), 5.41582481, -4.41556915]
+    pars = [0.00142612, 1.06950873, 0.93049225]
   
     # solve ODE with estimated parameters and plot 
     p = x_curve_fitting(t, *pars)
@@ -324,8 +326,8 @@ def plot_improve(a, b, c):
     # TYPE IN YOUR PARAMETER GUESS FOR a, b and c HERE AS A START FOR OPTIMISATION
     pars_guess = [a, b, c]
     # a = 0.00327
-    # b = 0.0133
-    # c = 0.00133
+    # b = 0.147
+    # c = 0.0147
     
     # call to find out optimal parameters using guess as start
     pars, pars_cov = x_pars(pars_guess)
@@ -503,4 +505,74 @@ def plot_benchmark():
     plt.subplots_adjust(wspace=0.3)
     plt.show()
 
+
+def plot_x_forecast():
+    ''' Plot the ODE LPM model over the given data plot with different q-value scenario for predictions.
+    Use a curve fitting function to accurately define the optimum parameter values.
+    Parameters:
+    -----------
+    none
+    Returns:
+    --------
+    none
+    '''
+
+    # Read in time and dependent variable data
+    [t, p_exact] = [load_data()[2], load_data()[3]]
+
+    # GUESS PARAMETERS HERE
+    pars_guess = [5.46588224e-08,  7.06532189, -6.06545369]
+
+    # Optimise parameters for model fit
+    pars, pars_cov = x_pars(pars_guess)
+
+    # Store optimal values for later use
+    [a, b, c] = pars
+
+    # Solve ODE and plot model
+    p = x_curve_fitting(t, *pars)
+    f, ax1 = plt.subplots()
+    ax1.plot(t, p_exact, 'r.', label='data')
+    ax1.plot(t, p, 'black', label='Model')
+
+    # Remember the last time
+    t_end = t[-1]
+
+    # Create forecast time with 20 new time steps
+    t1 = []
+    for i in range(5):
+        t1.append(i + t_end)
+
+    # Set initial and ambient values for forecast
+    pi = p[-1]  # Initial value of x is final value of model fit
+    p0 = 0.3  # Ambient value of spring pressure
+    p_ocean = 0.1  # Ambient value of ocean pressure
+
+    # Solve ODE prediction for scenario 1: Iwi haulting.
+    q1 = 0  # extraction 0
+    p1 = solve_ode_prediction(ode_model, t1[0], t1[-1], t1[1] - t1[0], pi, q1, a, b, c, p0, p_ocean)[1]
+    ax1.plot(t1, p1, 'purple', label='Prediction when q = 0')
+
+    # Solve ODE prediction for scenario 2: Businesses
+    q2 = 8.36e14+1.8e12  # extraction regime suggested by local businesses
+    p2 = solve_ode_prediction(ode_model, t1[0], t1[-1], t1[1] - t1[0], pi, q2, a, b, c, p0, p_ocean)[1]
+    ax1.plot(t1, p2, 'green', label='Prediction when q = 9e14')
+
+    # Solve ODE prediction for scenario 3: Farmers want the same
+    q3 = 8.36e14  # extract at faster rate
+    p3 = solve_ode_prediction(ode_model, t1[0], t1[-1], t1[1] - t1[0], pi, q3, a, b, c, p0, p_ocean)[1]
+    ax1.plot(t1, p3, 'blue', label='Prediction when q = 8.36e14')
+
+    # Solve ODE prediction for scenario 3: Farmers want the same
+    q4 = 1.83e14  # extract at faster rate
+    p4 = solve_ode_prediction(ode_model, t1[0], t1[-1], t1[1] - t1[0], pi, q4, a, b, c, p0, p_ocean)[1]
+    ax1.plot(t1, p4, 'red', label='Prediction when q = 1.83e14')
+
+    # Axis information
+    ax1.set_title('Pressure Forcast')
+    ax1.set_ylabel('Pressure (MPa)')
+    ax1.set_xlabel('Time (years)')
+    # plt.ylim(-10, 10)
+    ax1.legend()
+    plt.show()
 
