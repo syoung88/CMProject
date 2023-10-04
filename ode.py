@@ -225,7 +225,7 @@ def x_pars(pars_guess):
     return pars, pars_cov
 
 
-def solve_ode_prediction(f, t0, t1, dt, pi, q, a, b, c, p0, p1):
+def solve_ode_prediction(f, t0, t1, dt, pi, q, a, b, c, p0, p1, mp=0):
     """ Solve the pressure prediction ODE model using the Improved Euler Method.
     Parameters:
     -----------
@@ -251,6 +251,8 @@ def solve_ode_prediction(f, t0, t1, dt, pi, q, a, b, c, p0, p1):
         Freshwater spring pressure.
     p1 : float
         Ocean pressure.
+    mp : float (optional)
+        Amount q increases by each year.
     Returns:
     --------
     t : array-like
@@ -276,6 +278,7 @@ def solve_ode_prediction(f, t0, t1, dt, pi, q, a, b, c, p0, p1):
 
     # using the improved euler method to solve the pressure ODE
     for i in range(n):
+        q = q + (n * incr)
         f0 = f(t[i], p[i], q, a, b, c, p0, p1)
         f1 = f(t[i] + dt, p[i] + dt * f0, q, a, b, c, p0, p1)
         p.append(p[i] + dt * (f0 / 2 + f1 / 2))
@@ -548,31 +551,39 @@ def plot_x_forecast():
     p0 = 0.3  # Ambient value of spring pressure
     p_ocean = 0.1  # Ambient value of ocean pressure
 
-    # Solve ODE prediction for scenario 1: Iwi haulting.
-    q1 = 0  # extraction 0
-    p1 = solve_ode_prediction(ode_model, t1[0], t1[-1], t1[1] - t1[0], pi, q1, a, b, c, p0, p_ocean)[1]
-    ax1.plot(t1, p1, 'purple', label='Prediction when q = 0')
+    # Solve ODE prediction for scenario 1: 'Continue extracting at an increasing rate as seen from the past five years.'
+    # multiplier (5.71e4) is the average increase in q from 2014 - 2019
+    q1 = 2.65e7 # average q from 2014 - 2019
+    p1 = solve_ode_prediction(ode_model, t1[0], t1[-1], t1[1] - t1[0], pi, q1, a, b, c, p0, p_ocean, 5.71e4)[1]
+    ax1.plot(t1, p1, 'purple', label='extract @ incr rate')
 
-    # Solve ODE prediction for scenario 2: Businesses
-    q2 = 8.36e14+1.8e12  # extraction regime suggested by local businesses
+    # Solve ODE prediction for scenario 2: 'Extract at the current rate and no higher.'
+    q2 = 2.65e7 # average q from 2014 - 2019
     p2 = solve_ode_prediction(ode_model, t1[0], t1[-1], t1[1] - t1[0], pi, q2, a, b, c, p0, p_ocean)[1]
-    ax1.plot(t1, p2, 'green', label='Prediction when q = 9e14')
+    ax1.plot(t1, p2, 'green', label='extract @ current rate')
 
-    # Solve ODE prediction for scenario 3: Farmers want the same
-    q3 = 8.36e14  # extract at faster rate
+    # Solve ODE prediction for scenario 3: 'Extract at a reduced rate and continue no higher.'
+    q3 = 1.33e7 # ~half average q from 2014 - 2019
     p3 = solve_ode_prediction(ode_model, t1[0], t1[-1], t1[1] - t1[0], pi, q3, a, b, c, p0, p_ocean)[1]
-    ax1.plot(t1, p3, 'blue', label='Prediction when q = 8.36e14')
+    ax1.plot(t1, p3, 'blue', label='extract @ decr rate')
 
-    # Solve ODE prediction for scenario 3: Farmers want the same
-    q4 = 1.83e14  # extract at faster rate
-    p4 = solve_ode_prediction(ode_model, t1[0], t1[-1], t1[1] - t1[0], pi, q4, a, b, c, p0, p_ocean)[1]
-    ax1.plot(t1, p4, 'red', label='Prediction when q = 1.83e14')
+    # Solve ODE prediction for scenario 4: 'Extract at a decreasing rate until pressures stabilise to the level seen
+    # between 2000 and 2010.'
+    # multiplier (-3e5) i chose manually, there's no condition checking for a stable P or anything..
+    q4 = 2.65e7 # average q from 2014 - 2019
+    p4 = solve_ode_prediction(ode_model, t1[0], t1[-1], t1[1] - t1[0], pi, q4, a, b, c, p0, p_ocean, -3e5)[1]
+    ax1.plot(t1, p4, 'red', label='extract @ decr rate until P stable')
+
+    # Solve ODE prediction for scenario 5: 'Halt the extraction until pressures stabilise to the level seen between
+    # 2000 and 2010.'
+    q5 = 0
+    p5 = solve_ode_prediction(ode_model, t1[0], t1[-1], t1[1] - t1[0], pi, q5, a, b, c, p0, p_ocean)[1]
+    ax1.plot(t1, p5, 'pink', label='no extraction')
 
     # Axis information
     ax1.set_title('Pressure Forcast')
     ax1.set_ylabel('Pressure (MPa)')
     ax1.set_xlabel('Time (years)')
-    # plt.ylim(-10, 10)
     ax1.legend()
     plt.show()
 
