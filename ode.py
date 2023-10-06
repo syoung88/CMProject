@@ -278,7 +278,7 @@ def solve_ode_prediction(f, t0, t1, dt, pi, q, a, b, c, p0, p1, mp=0):
 
     # using the improved euler method to solve the pressure ODE
     for i in range(n):
-        q = q + (n * incr)
+        q = q + (n * mp)
         f0 = f(t[i], p[i], q, a, b, c, p0, p1)
         f1 = f(t[i] + dt, p[i] + dt * f0, q, a, b, c, p0, p1)
         p.append(p[i] + dt * (f0 / 2 + f1 / 2))
