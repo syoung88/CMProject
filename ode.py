@@ -278,7 +278,7 @@ def solve_ode_prediction(f, t0, t1, dt, pi, q, a, b, c, p0, p1, mp=0):
 
     # using the improved euler method to solve the pressure ODE
     for i in range(n):
-        q = q + (n * mp)
+        q = q + (n * incr)
         f0 = f(t[i], p[i], q, a, b, c, p0, p1)
         f1 = f(t[i] + dt, p[i] + dt * f0, q, a, b, c, p0, p1)
         p.append(p[i] + dt * (f0 / 2 + f1 / 2))
@@ -499,7 +499,7 @@ def plot_benchmark():
         t, p = solve_ode(ode_model, t0, t1, i, p0, pars)
         plot[2].plot(1 / i, p[-1], "kx")
 
-    plot[2].set_ylabel(f"Temp(t = {10})")
+    plot[2].set_ylabel(f"Pressure(t = {10})")
     plot[2].set_xlabel("1/\u0394t")
     plot[2].set_title("Timestep Convergence")
 
