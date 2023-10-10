@@ -225,7 +225,7 @@ def x_pars(pars_guess):
     return pars, pars_cov
 
 
-def solve_ode_prediction(f, t0, t1, dt, pi, q, a, b, c, p0, p1, mp=0):
+def solve_ode_prediction(f, t0, t1, dt, pi, q, a, b, c, p0, p1, mp=0.0):
     """ Solve the pressure prediction ODE model using the Improved Euler Method.
     Parameters:
     -----------
@@ -275,6 +275,9 @@ def solve_ode_prediction(f, t0, t1, dt, pi, q, a, b, c, p0, p1, mp=0):
     # initialising the time and solution vectors
     p = [pi]
     t = [t0]
+
+    # calculate increment length
+    incr = mp * dt
 
     # using the improved euler method to solve the pressure ODE
     for i in range(n):
@@ -553,8 +556,12 @@ def plot_x_forecast():
 
     # Solve ODE prediction for scenario 1: 'Continue extracting at an increasing rate as seen from the past five years.'
     # multiplier (5.71e4) is the average increase in q from 2014 - 2019
-    q1 = 2.65e7 # average q from 2014 - 2019
-    p1 = solve_ode_prediction(ode_model, t1[0], t1[-1], t1[1] - t1[0], pi, q1, a, b, c, p0, p_ocean, 5.71e4)[1]
+    # q1 = 2.65e7 # average q from 2014 - 2019
+    # p1 = solve_ode_prediction(ode_model, t1[0], t1[-1], t1[1] - t1[0], pi, q1, a, b, c, p0, p_ocean, 5.71e4)[1]
+    # ax1.plot(t1, p1, 'purple', label='extract @ incr rate')
+
+    q1 = 5.71e7 # 2x average q from 2014 - 2019
+    p1 = solve_ode_prediction(ode_model, t1[0], t1[-1], t1[1] - t1[0], pi, q1, a, b, c, p0, p_ocean)[1]
     ax1.plot(t1, p1, 'purple', label='extract @ incr rate')
 
     # Solve ODE prediction for scenario 2: 'Extract at the current rate and no higher.'
@@ -570,9 +577,9 @@ def plot_x_forecast():
     # Solve ODE prediction for scenario 4: 'Extract at a decreasing rate until pressures stabilise to the level seen
     # between 2000 and 2010.'
     # multiplier (-3e5) i chose manually, there's no condition checking for a stable P or anything..
-    q4 = 2.65e7 # average q from 2014 - 2019
-    p4 = solve_ode_prediction(ode_model, t1[0], t1[-1], t1[1] - t1[0], pi, q4, a, b, c, p0, p_ocean, -3e5)[1]
-    ax1.plot(t1, p4, 'red', label='extract @ decr rate until P stable')
+    # q4 = 2.65e7 # average q from 2014 - 2019
+    # p4 = solve_ode_prediction(ode_model, t1[0], t1[-1], t1[1] - t1[0], pi, q4, a, b, c, p0, p_ocean, -3e5)[1]
+    # ax1.plot(t1, p4, 'red', label='extract @ decr rate until P stable')
 
     # Solve ODE prediction for scenario 5: 'Halt the extraction until pressures stabilise to the level seen between
     # 2000 and 2010.'
@@ -587,3 +594,130 @@ def plot_x_forecast():
     ax1.legend()
     plt.show()
 
+# This function computes uncertainty in your model
+def plot_x_uncertainty():
+    """
+    This function plots the uncertainty of the ODE model.
+    """
+
+    # read in time and dependent variable data
+    [t, p_exact] = [load_data()[2], load_data()[3]]
+
+    # GUESS PARAMETERS HERE
+    pars_guess = [5.46588224e-08,  7.06532189, -6.06545369]
+
+    # Optimise parameters for model fit
+    pars, pars_cov = x_pars(pars_guess)
+
+    # Store optimal values for later use
+    [a,b,c] = pars
+
+    # Solve ODE and plot model
+    p = x_curve_fitting(t, *pars)
+    figa, ax1 = plt.subplots()
+    ax1.plot(t, p_exact, 'r.', label='data')
+    ax1.plot(t, p, 'black', label='Model')
+
+    # Remember the last time
+    t_end = t[-1]
+
+    # Create forecast time with 400 new time steps
+    t1 = []
+    for i in range(5):
+        t1.append(i+t_end)
+
+    # Set initial and ambient values for forecast
+    pi = p[-1] # Initial value of x is final value of model fit
+    p0 = 0.3 # Ambient value of
+    p_ocean = 0.1
+
+    q1 = 5.71e7 # 2x average q from 2014 - 2019
+    p1 = solve_ode_prediction(ode_model, t1[0], t1[-1], t1[1] - t1[0], pi, q1, a, b, c, p0, p_ocean)[1]
+    ax1.plot(t1, p1, 'purple', label='extract @ incr rate')
+
+    # Solve ODE prediction for scenario 2: 'Extract at the current rate and no higher.'
+    q2 = 2.65e7 # average q from 2014 - 2019
+    p2 = solve_ode_prediction(ode_model, t1[0], t1[-1], t1[1] - t1[0], pi, q2, a, b, c, p0, p_ocean)[1]
+    ax1.plot(t1, p2, 'green', label='extract @ current rate')
+
+    # Solve ODE prediction for scenario 3: 'Extract at a reduced rate and continue no higher.'
+    q3 = 1.33e7 # ~half average q from 2014 - 2019
+    p3 = solve_ode_prediction(ode_model, t1[0], t1[-1], t1[1] - t1[0], pi, q3, a, b, c, p0, p_ocean)[1]
+    ax1.plot(t1, p3, 'blue', label='extract @ decr rate')
+
+    # Solve ODE prediction for scenario 4: 'Extract at a decreasing rate until pressures stabilise to the level seen
+    # between 2000 and 2010.'
+    # multiplier (-3e5) i chose manually, there's no condition checking for a stable P or anything..
+    # q4 = 2.65e7 # average q from 2014 - 2019
+    # p4 = solve_ode_prediction(ode_model, t1[0], t1[-1], t1[1] - t1[0], pi, q4, a, b, c, p0, p_ocean, -3e5)[1]
+    # ax1.plot(t1, p4, 'red', label='extract @ decr rate until P stable')
+
+    # Solve ODE prediction for scenario 5: 'Halt the extraction until pressures stabilise to the level seen between
+    # 2000 and 2010.'
+    q5 = 0
+    p5 = solve_ode_prediction(ode_model, t1[0], t1[-1], t1[1] - t1[0], pi, q5, a, b, c, p0, p_ocean)[1]
+    ax1.plot(t1, p5, 'pink', label='no extraction')
+
+    # Estimate the variability of parameter b
+    # We are assuming that parameter b has the biggest source of error in the system
+    # (you could choose another parameter if you like)
+    var = 0.1
+
+    # using Normal function to generate 500 random samples from a Gaussian distribution
+    b_samples = np.random.normal(b, var, 500)
+    c_samples = np.random.normal(c, var, 500)
+
+    # initialise list to count parameters for histograms
+    b_list = []
+    c_list = []
+
+    # loop to plot the different predictions with uncertainty
+    for i in range(0,499): # 500 samples are 0 to 499
+        # frequency distribution for histograms for parameters
+        b_list.append(b_samples[i])
+        c_list.append(c_samples[i])
+
+        # Solve model fit with uncertainty
+        spars = [a, b_samples[i], c_samples[i]]
+        p = x_curve_fitting(t, *spars)
+        ax1.plot(t, p, 'black', alpha=0.1, lw=0.5)
+
+        # Solve ODE prediction for scenario 1 with uncertainty
+        q1 = 5.71e7  # 2x average q from 2014 - 2019
+        p1 = solve_ode_prediction(ode_model, t1[0], t1[-1], t1[1] - t1[0], pi, q1, a, b_samples[i], c_samples[i], p0, p_ocean)[1]
+        ax1.plot(t1, p1, 'purple', alpha=0.1, lw=0.5)
+
+        # Solve ODE prediction for scenario 2 with uncertainty
+        q2 = 2.65e7  # average q from 2014 - 2019
+        p2 = solve_ode_prediction(ode_model, t1[0], t1[-1], t1[1] - t1[0], pi, q2, a, b_samples[i], c_samples[i], p0, p_ocean)[1]
+        ax1.plot(t1, p2, 'green', alpha=0.1, lw=0.5)
+
+        # Solve ODE prediction for scenario 3 with uncertainty
+        q3 = 1.33e7  # ~half average q from 2014 - 2019
+        p3 = solve_ode_prediction(ode_model, t1[0], t1[-1], t1[1] - t1[0], pi, q3, a, b_samples[i], c_samples[i], p0, p_ocean)[1]
+        ax1.plot(t1, p3, 'blue', alpha=0.1, lw=0.5)
+
+        # Solve ODE prediction for scenario 4 with uncertainty
+        q4 = 0  # 0
+        p4 = solve_ode_prediction(ode_model, t1[0], t1[-1], t1[1] - t1[0], pi, q4, a, b_samples[i], c_samples[i], p0, p_ocean)[1]
+        ax1.plot(t1, p4, 'pink', alpha=0.1, lw=0.5)
+
+    ax1.set_title('Pressure Uncertainty Forecast')
+    ax1.set_ylabel('Pressure (MPa)')
+    ax1.set_xlabel('Time (years)')
+    ax1.legend()
+
+    # plotting the histograms
+    figb, (ax2) = plt.subplots(1, 1)
+    num_bins = 30
+    ax2.hist(b_list, num_bins)
+    ax2.set_title("Frequency Density plot for Parameter b", fontsize=9)
+    ax2.set_xlabel('Parameter b', fontsize=9)
+    ax2.set_ylabel('Frequency density', fontsize=9)
+    a_yf5, a_yf95 = np.percentile(b_list, [5, 95])
+    ax2.axvline(a_yf5, label='95% interval', color='r', linestyle='--')
+    ax2.axvline(a_yf95, color='r', linestyle='--')
+    ax2.legend(loc=0, fontsize=9)
+
+    plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0)
+    plt.show()

@@ -2,15 +2,15 @@ from ode import *
 
 if __name__ == "__main__":
     # benchmarking for ODE
-    plot_benchmark()
+    # plot_benchmark()
 
     #grad_descent()
 
     # ODE model with initial parameter values
-    plot_suitable()
+    # plot_suitable()
 
     # ODE model with improved parameter values from curve_fit
-    plot_improve(0.00327, 0.147, 0.0147)
+    # plot_improve(0.00327, 0.147, 0.0147)
 
     # Try and find best b and c values
     # min_misfit = np.inf
@@ -29,5 +29,5 @@ if __name__ == "__main__":
     # print("Best b: ", best_b)
     # print("Best c: ", best_c)
 
-    # plot_x_forecast()
-
+    plot_x_forecast()
+    plot_x_uncertainty()
