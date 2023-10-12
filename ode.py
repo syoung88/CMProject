@@ -290,7 +290,7 @@ def solve_ode_prediction(f, t0, t1, dt, pi, q, a, b, c, p0, p1, p_want=0.0, t_wa
         # find the average increase per year that will reach the desired pressure
         d = int((q_est - q)/t_want)
 
-        # calculate array of extraction scaler
+        # calculate array of extraction changes
         for i in range(n):
             if i <= wait:
                 incr[i] = 0
