@@ -1,0 +1,26 @@
+import pandas as pd
+import statistics
+
+# using dataset containing surface areas.
+
+aq_df = pd.read_csv("location-and-extent-of-nzs-aquifers-2015.csv")
+area = aq_df.AREA
+
+area_list = []
+for i in area:
+    area_list += [i]
+
+v = statistics.variance(area_list)
+
+# using dataset containing 'depth to hydrogeoloical basement'.
+
+aq2_df = pd.read_csv("nationally-consistent-hydrogeological-unit-map-2019.csv")
+depth = aq2_df[['base_MEAN', 'HUM_type']]
+depth = depth.loc[depth['HUM_type'] == 'Aquifer']
+
+depth_list = []
+for j in depth.base_MEAN:
+    depth_list += [j]
+
+v = statistics.variance(depth_list)
+print(v)
