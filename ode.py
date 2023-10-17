@@ -604,9 +604,9 @@ def plot_x_forecast():
 
     # Solve ODE prediction for scenario 4: 'Extract at a decreasing rate until pressures stabilise to the level seen
     # between 2000 and 2010.'
-    q4 = 2.65e7 # average q from 2014 - 2019
-    p4 = solve_ode_prediction(ode_model, t1[0], t1[-1], t1[1] - t1[0], pi, q4, a, b, c, p0, p_ocean, p_want=0.281, t_want=5, wait=5)[1]
-    ax1.plot(t1, p4, 'red', label='extract @ decr rate until P stable')
+    # q4 = 2.5e7 # average q from 2014 - 2019
+    # p4 = solve_ode_prediction(ode_model, t1[0], t1[-1], t1[1] - t1[0], pi, q4, a, b, c, p0, p_ocean, p_want=0.281, t_want=5, wait=5)[1]
+    # ax1.plot(t1, p4, 'red', label='extract @ decr rate until P stable')
 
     # Iwi:
     # Solve ODE prediction for scenario 5: 'Halt the extraction until pressures stabilise to the level seen between
@@ -616,7 +616,7 @@ def plot_x_forecast():
     ax1.plot(t1, p5, 'pink', label='Iwi: Halt extraction until stabilised.')
 
     # Axis information
-    ax1.set_title('Pressure Forcast')
+    ax1.set_title('Pressure Forecast')
     ax1.set_ylabel('Pressure (MPa)')
     ax1.set_xlabel('Time (years)')
     ax1.legend()
@@ -675,9 +675,9 @@ def plot_x_uncertainty():
 
     # Solve ODE prediction for scenario 4: 'Extract at a decreasing rate until pressures stabilise to the level seen
     # between 2000 and 2010.'
-    q4 = 2.65e7  # average q from 2014 - 2019
-    p4 = solve_ode_prediction(ode_model, t1[0], t1[-1], t1[1] - t1[0], pi, q4, a, b, c, p0, p_ocean, p_want=0.281, t_want=5, wait=5)[1]
-    ax1.plot(t1, p4, 'red', label='extract @ decr rate until P stable')
+    # q4 = 2.5e7  # average q from 2014 - 2019
+    # p4 = solve_ode_prediction(ode_model, t1[0], t1[-1], t1[1] - t1[0], pi, q4, a, b, c, p0, p_ocean, p_want=0.281, t_want=5, wait=5)[1]
+    # ax1.plot(t1, p4, 'red', label='extract @ decr rate until P stable')
 
     # Solve ODE prediction for scenario 5: 'Halt the extraction until pressures stabilise to the level seen between
     # 2000 and 2010.'
@@ -728,10 +728,10 @@ def plot_x_uncertainty():
 
 
         # Solve ODE prediction for scenario 4 with uncertainty
-        q4 = 2.65e7  # average q from 2014 - 2019
-        p4 = solve_ode_prediction(ode_model, t1[0], t1[-1], t1[1] - t1[0], pi, q4, a, b, c_samples[i], p0, p_ocean, p_want=0.281,
-                                  t_want=5, wait=5)[1]
-        ax1.plot(t1, p4, 'red', alpha=0.1, lw=0.5)
+        # q4 = 2.5e7  # average q from 2014 - 2019
+        # p4 = solve_ode_prediction(ode_model, t1[0], t1[-1], t1[1] - t1[0], pi, q4, a, b, c_samples[i], p0, p_ocean, p_want=0.281,
+        #                           t_want=5, wait=5)[1]
+        # ax1.plot(t1, p4, 'red', alpha=0.1, lw=0.5)
 
         # Solve ODE prediction for scenario 5 with uncertainty
         q5 = 0

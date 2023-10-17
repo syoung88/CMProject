@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="AutoImportSettings">
-    <option name="autoReloadType" value="SELECTIVE" />
-  </component>
   <component name="ChangeListManager">
-    <list default="true" id="ac47918a-35f0-4178-a591-f08c2860a080" name="Changes" comment="" />
+    <list default="true" id="afaa4431-1213-495c-b6ed-a08101e28900" name="Changes" comment="Alex's Attempt at changing the lab code to suit the ODE." />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -16,68 +13,47 @@
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
-  <component name="ProjectColorInfo">{
-  &quot;associatedIndex&quot;: 2
-}</component>
-  <component name="ProjectId" id="2WJkMItcP27l6wMqmbRjVynLaLR" />
+  <component name="ProjectId" id="2VxFsVtfqV10WCJCgm3RSprBxu3" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/Sammy/OneDrive/Documents/2023 Sem 2/220&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "last_opened_file_path": "C:/Users/a1exa/Desktop/ENGSCI 263/Lab 6"
   }
-}</component>
-  <component name="RunManager">
-    <configuration name="main" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
-      <module name="CMProject" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="SDK_NAME" value="Python 3.11" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-  </component>
+}]]></component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="ac47918a-35f0-4178-a591-f08c2860a080" name="Changes" comment="" />
-      <created>1696458022072</created>
+      <changelist id="afaa4431-1213-495c-b6ed-a08101e28900" name="Changes" comment="" />
+      <created>1695770030495</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1696458022072</updated>
+      <updated>1695770030495</updated>
     </task>
-    <task id="LOCAL-00001" summary="forecast plot finished with extraction profiles">
-      <option name="closed" value="true" />
-      <created>1697500094557</created>
+    <task id="LOCAL-00001" summary="Initial adds">
+      <created>1695770911224</created>
       <option name="number" value="00001" />
       <option name="presentableId" value="LOCAL-00001" />
       <option name="project" value="LOCAL" />
-      <updated>1697500094557</updated>
+      <updated>1695770911224</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Alex's Attempt at changing the lab code to suit the ODE.">
+      <created>1695779735005</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1695779735005</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="forecast plot finished with extraction profiles" />
-    <option name="LAST_COMMIT_MESSAGE" value="forecast plot finished with extraction profiles" />
+    <MESSAGE value="Initial adds" />
+    <MESSAGE value="Alex's Attempt at changing the lab code to suit the ODE." />
+    <option name="LAST_COMMIT_MESSAGE" value="Alex's Attempt at changing the lab code to suit the ODE." />
   </component>
 </project>
