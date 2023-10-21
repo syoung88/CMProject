@@ -604,9 +604,9 @@ def plot_x_forecast():
 
     # Solve ODE prediction for scenario 4: 'Extract at a decreasing rate until pressures stabilise to the level seen
     # between 2000 and 2010.'
-    # q4 = 2.5e7 # average q from 2014 - 2019
-    # p4 = solve_ode_prediction(ode_model, t1[0], t1[-1], t1[1] - t1[0], pi, q4, a, b, c, p0, p_ocean, p_want=0.281, t_want=5, wait=5)[1]
-    # ax1.plot(t1, p4, 'red', label='extract @ decr rate until P stable')
+    q4 = 2.5e7 # average q from 2014 - 2019
+    p4 = solve_ode_prediction(ode_model, t1[0], t1[-1], t1[1] - t1[0], pi, q4, a, b, c, p0, p_ocean, p_want=0.281, t_want=5, wait=5)[1]
+    ax1.plot(t1, p4, 'red', label='extract @ decr rate until P stable')
 
     # Iwi:
     # Solve ODE prediction for scenario 5: 'Halt the extraction until pressures stabilise to the level seen between
@@ -745,16 +745,16 @@ def plot_x_uncertainty():
     ax1.legend()
 
     # plotting the histograms
-    # figb, (ax2) = plt.subplots(1, 1)
-    # num_bins = 30
-    # ax2.hist(c_list, num_bins)
-    # ax2.set_title("Frequency Density plot for Parameter b", fontsize=9)
-    # ax2.set_xlabel('Parameter c', fontsize=9)
-    # ax2.set_ylabel('Frequency density', fontsize=9)
-    # a_yf5, a_yf95 = np.percentile(c_list, [5, 95])
-    # ax2.axvline(a_yf5, label='95% interval', color='r', linestyle='--')
-    # ax2.axvline(a_yf95, color='r', linestyle='--')
-    # ax2.legend(loc=0, fontsize=9)
+    figb, (ax2) = plt.subplots(1, 1)
+    num_bins = 30
+    ax2.hist(c_list, num_bins)
+    ax2.set_title("Frequency Density plot for Parameter c", fontsize=9)
+    ax2.set_xlabel('Parameter c', fontsize=9)
+    ax2.set_ylabel('Frequency density', fontsize=9)
+    a_yf5, a_yf95 = np.percentile(c_list, [5, 95])
+    ax2.axvline(a_yf5, label='95% interval', color='r', linestyle='--')
+    ax2.axvline(a_yf95, color='r', linestyle='--')
+    ax2.legend(loc=0, fontsize=9)
 
     plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0)
     plt.show()
